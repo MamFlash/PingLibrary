@@ -337,7 +337,25 @@ function deleteVideo(id){videos=videos.filter(v=>v.id!==id);saveVideos();renderL
 
 function renderAddTagSections(){cats.forEach(c=>{if(!formTags[c.id])formTags[c.id]=[];});renderTagSections('add-tag-sections',formTags,'toggleFormTag');}
 function toggleFormTag(cat,val){if(!formTags[cat])formTags[cat]=[];const i=formTags[cat].indexOf(val);if(i===-1)formTags[cat].push(val);else formTags[cat].splice(i,1);renderAddTagSections();}
-function handleUrlInput(){const id=getYouTubeId(document.getElementById('add-url').value),p=document.getElementById('add-preview');if(id){document.getElementById('add-preview-img').src=thumb(id);p.style.display='block';}else p.style.display='none';}
+async function handleUrlInput(){
+  const url=document.getElementById('add-url').value.trim();
+  const id=getYouTubeId(url);
+  const p=document.getElementById('add-preview');
+  if(id){
+    document.getElementById('add-preview-img').src=thumb(id);
+    p.style.display='block';
+    // Auto-fetch title via oEmbed if title field is empty
+    const titleField=document.getElementById('add-title');
+    if(!titleField.value.trim()){
+      titleField.value='⏳ Chargement du titre...';
+      try{
+        const res=await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`);
+        if(res.ok){const data=await res.json();titleField.value=data.title||'';}
+        else titleField.value='';
+      }catch(e){titleField.value='';}
+    }
+  }else{p.style.display='none';}
+}
 
 function submitVideo(){
   const url=document.getElementById('add-url').value.trim(),title=document.getElementById('add-title').value.trim(),notes=document.getElementById('add-notes').value.trim();
