@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PingLib — Bibliothèque des coachs</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080808;
+    --bg2: #101010;
+    --bg3: #161616;
+    --border: #1f1f1f;
+    --text: #efefef;
+    --muted: #555;
+    --accent: #d4ff45;
+    --teal: #3fffd0;
+    --orange: #ff5c3a;
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    font-size: 14px;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* HEADER */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(8,8,8,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px; gap: 16px;
+  }
+  .logo-wrap { display: flex; align-items: center; gap: 10px; }
+  .logo-icon { font-size: 28px; line-height: 1; }
+  .logo-name { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--accent); letter-spacing: -0.5px; }
+  .logo-sub { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; }
+
+  nav { display: flex; gap: 6px; }
+  .nav-btn {
+    font-family: var(--font-display); font-size: 13px; font-weight: 600;
+    background: transparent; border: 1px solid var(--border);
+    color: var(--muted); padding: 7px 16px; border-radius: 8px;
+    cursor: pointer; transition: all 0.18s;
+  }
+  .nav-btn:hover { border-color: #333; color: var(--text); }
+  .nav-btn.active { background: var(--accent); color: #080808; border-color: var(--accent); }
+
+  /* MAIN */
+  main { max-width: 1160px; margin: 0 auto; padding: 28px 24px 60px; }
+
+  /* VIEWS */
+  .view { display: none; animation: fadeIn 0.2s ease; }
+  .view.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* TOOLBAR */
+  .toolbar { display: flex; gap: 10px; margin-bottom: 18px; align-items: center; flex-wrap: wrap; }
+  .search-input {
+    flex: 1; min-width: 180px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 10px; color: var(--text); padding: 10px 16px;
+    font-family: var(--font-body); font-size: 14px; outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-input:focus { border-color: #333; }
+  .clear-btn {
+    background: transparent; border: 1px solid var(--orange); color: var(--orange);
+    padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 12px;
+    font-family: var(--font-body); white-space: nowrap; transition: all 0.18s;
+  }
+  .clear-btn:hover { background: var(--orange); color: #fff; }
+
+  /* FILTERS */
+  .filter-section {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px 20px; margin-bottom: 24px;
+    display: flex; gap: 24px; flex-wrap: wrap;
+  }
+  .filter-group { flex: 1; min-width: 160px; }
+  .filter-label {
+    font-family: var(--font-display); font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px;
+  }
+  .tag-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag-pill {
+    background: var(--bg3); border: 1px solid var(--border);
+    color: #888; padding: 5px 13px; border-radius: 20px;
+    cursor: pointer; font-size: 12px; transition: all 0.15s;
+    font-family: var(--font-body);
+  }
+  .tag-pill:hover { border-color: #333; color: var(--text); }
+  .tag-pill.active-niveau { background: var(--accent); color: #080808; border-color: var(--accent); font-weight: 600; }
+  .tag-pill.active-technique { background: var(--teal); color: #080808; border-color: var(--teal); font-weight: 600; }
+  .tag-pill.active-exercice { background: var(--orange); color: #fff; border-color: var(--orange); font-weight: 600; }
+
+  /* STATS BAR */
+  .stats-bar { display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
+  .stat-item { color: var(--muted); font-size: 13px; }
+  .stat-item strong { color: var(--text); font-family: var(--font-display); font-size: 18px; font-weight: 700; margin-right: 4px; }
+
+  /* GRID */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; }
+
+  /* CARD */
+  .card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-3px); border-color: #2a2a2a; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+
+  .thumb-wrap {
+    position: relative; aspect-ratio: 16/9; background: #000;
+    overflow: hidden; cursor: pointer;
+  }
+  .thumb-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s; }
+  .card:hover .thumb-wrap img { transform: scale(1.04); }
+  .play-overlay {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.2s;
+  }
+  .thumb-wrap:hover .play-overlay { opacity: 1; }
+  .play-btn-circle {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: rgba(0,0,0,0.75); border: 2px solid rgba(255,255,255,0.8);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 18px; padding-left: 3px;
+  }
+  .iframe-wrap { position: relative; aspect-ratio: 16/9; background: #000; }
+  .iframe-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
+
+  .card-body { padding: 14px 16px; }
+  .card-title { font-family: var(--font-display); font-weight: 700; font-size: 14px; margin-bottom: 6px; line-height: 1.4; }
+  .card-notes { color: var(--muted); font-size: 12px; margin-bottom: 10px; line-height: 1.5; }
+  .card-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+  .card-tag {
+    font-size: 11px; border: 1px solid; padding: 2px 9px; border-radius: 12px;
+    font-family: var(--font-body);
+  }
+  .card-tag.niveau { border-color: var(--accent); color: var(--accent); }
+  .card-tag.technique { border-color: var(--teal); color: var(--teal); }
+  .card-tag.exercice { border-color: var(--orange); color: var(--orange); }
+
+  .card-footer { display: flex; justify-content: space-between; align-items: center; }
+  .card-date { color: #333; font-size: 11px; }
+  .card-actions { display: flex; gap: 6px; align-items: center; }
+  .btn-icon {
+    background: transparent; border: none; cursor: pointer;
+    color: var(--muted); font-size: 14px; padding: 4px 6px;
+    transition: color 0.15s; border-radius: 6px;
+  }
+  .btn-icon:hover { color: var(--orange); background: rgba(255,92,58,0.1); }
+  .confirm-delete { display: flex; align-items: center; gap: 6px; }
+  .confirm-text { font-size: 11px; color: var(--orange); }
+  .btn-yes { background: var(--orange); border: none; color: #fff; padding: 3px 8px; border-radius: 5px; cursor: pointer; font-size: 11px; }
+  .btn-no { background: var(--bg3); border: none; color: #888; padding: 3px 8px; border-radius: 5px; cursor: pointer; font-size: 11px; }
+
+  /* EMPTY */
+  .empty { text-align: center; padding: 80px 20px; }
+  .empty-icon { font-size: 56px; margin-bottom: 16px; }
+  .empty-text { color: var(--muted); font-size: 16px; margin-bottom: 24px; font-family: var(--font-display); }
+  .btn-primary {
+    background: var(--accent); color: #080808; border: none;
+    padding: 13px 26px; border-radius: 10px; cursor: pointer;
+    font-family: var(--font-display); font-size: 14px; font-weight: 700;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(212,255,69,0.3); }
+
+  /* FORM */
+  .form-wrap { max-width: 620px; margin: 0 auto; }
+  .form-title { font-family: var(--font-display); font-size: 24px; font-weight: 800; color: var(--accent); margin-bottom: 28px; }
+  .form-label {
+    display: block; font-size: 11px; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+    font-family: var(--font-display);
+  }
+  .form-input {
+    width: 100%; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 10px; color: var(--text); padding: 11px 14px;
+    font-family: var(--font-body); font-size: 14px; outline: none; margin-bottom: 20px;
+    transition: border-color 0.2s;
+  }
+  .form-input:focus { border-color: #333; }
+  textarea.form-input { resize: vertical; min-height: 80px; }
+  .preview-wrap { margin-bottom: 20px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+  .preview-wrap img { width: 100%; display: block; }
+
+  .form-section { margin-bottom: 22px; }
+  .form-section-label {
+    font-family: var(--font-display); font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .error-msg { color: var(--orange); font-size: 13px; margin-bottom: 14px; padding: 10px 14px; background: rgba(255,92,58,0.08); border-radius: 8px; border: 1px solid rgba(255,92,58,0.2); }
+  .success-msg { color: var(--teal); font-size: 13px; margin-bottom: 14px; padding: 10px 14px; background: rgba(63,255,208,0.06); border-radius: 8px; border: 1px solid rgba(63,255,208,0.15); }
+
+  /* MANAGE */
+  .manage-add-row { display: flex; gap: 10px; margin-bottom: 32px; align-items: stretch; flex-wrap: wrap; }
+  .form-select {
+    background: var(--bg3); border: 1px solid var(--border); color: var(--text);
+    padding: 10px 14px; border-radius: 10px; font-family: var(--font-body); font-size: 14px; outline: none;
+  }
+  .btn-teal {
+    background: var(--teal); color: #080808; border: none;
+    padding: 10px 18px; border-radius: 10px; cursor: pointer;
+    font-family: var(--font-display); font-weight: 700; font-size: 14px;
+    white-space: nowrap; transition: transform 0.15s;
+  }
+  .btn-teal:hover { transform: translateY(-1px); }
+
+  .manage-cat {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 18px 20px; margin-bottom: 14px;
+  }
+  .manage-cat-title {
+    font-family: var(--font-display); font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .manageable-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 20px; padding: 5px 10px 5px 13px; font-size: 12px; margin: 3px;
+  }
+  .remove-tag-btn {
+    background: transparent; border: none; color: var(--orange);
+    cursor: pointer; font-size: 15px; padding: 0 2px; line-height: 1;
+    transition: transform 0.15s;
+  }
+  .remove-tag-btn:hover { transform: scale(1.2); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: #222; border-radius: 3px; }
+
+  @media (max-width: 600px) {
+    header { padding: 0 16px; height: auto; padding-top: 12px; padding-bottom: 12px; }
+    main { padding: 16px 14px 60px; }
+    .filter-section { flex-direction: column; gap: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-wrap">
+    <div class="logo-icon">🏓</div>
+    <div>
+      <div class="logo-name">PingLib</div>
+      <div class="logo-sub">Bibliothèque des coachs</div>
+    </div>
+  </div>
+  <nav>
+    <button class="nav-btn active" onclick="showView('library')" id="btn-library">Vidéos</button>
+    <button class="nav-btn" onclick="showView('add')" id="btn-add">+ Ajouter</button>
+    <button class="nav-btn" onclick="showView('manage')" id="btn-manage">⚙ Tags</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- LIBRARY VIEW -->
+  <div class="view active" id="view-library">
+    <div class="toolbar">
+      <input class="search-input" id="search-input" placeholder="Rechercher une vidéo..." oninput="renderLibrary()">
+      <button class="clear-btn" id="clear-filters-btn" onclick="clearFilters()" style="display:none">Effacer filtres</button>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-group">
+        <div class="filter-label" style="color:var(--accent)">📊 Niveau</div>
+        <div class="tag-row" id="filter-niveau"></div>
+      </div>
+      <div class="filter-group">
+        <div class="filter-label" style="color:var(--teal)">🏓 Technique</div>
+        <div class="tag-row" id="filter-technique"></div>
+      </div>
+      <div class="filter-group">
+        <div class="filter-label" style="color:var(--orange)">⚡ Exercice</div>
+        <div class="tag-row" id="filter-exercice"></div>
+      </div>
+    </div>
+
+    <div class="stats-bar" id="stats-bar"></div>
+    <div class="grid" id="video-grid"></div>
+    <div id="empty-state" style="display:none">
+      <div class="empty">
+        <div class="empty-icon">🏓</div>
+        <div class="empty-text" id="empty-text">Aucune vidéo pour l'instant</div>
+        <button class="btn-primary" onclick="showView('add')">Ajouter la première vidéo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD VIEW -->
+  <div class="view" id="view-add">
+    <div class="form-wrap">
+      <div class="form-title">Ajouter une vidéo</div>
+
+      <label class="form-label">URL YouTube</label>
+      <input class="form-input" id="add-url" placeholder="https://youtube.com/watch?v=..." oninput="handleUrlInput()">
+      <div id="add-preview" style="display:none" class="preview-wrap"><img id="add-preview-img" src="" alt="preview"></div>
+
+      <label class="form-label">Titre</label>
+      <input class="form-input" id="add-title" placeholder="Ex: Cours revers topspin débutants">
+
+      <label class="form-label">Notes (optionnel)</label>
+      <textarea class="form-input" id="add-notes" placeholder="Remarques, contexte..."></textarea>
+
+      <div class="form-section">
+        <div class="form-section-label" style="color:var(--accent)">📊 Niveau</div>
+        <div class="tag-row" id="form-niveau"></div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-label" style="color:var(--teal)">🏓 Technique</div>
+        <div class="tag-row" id="form-technique"></div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-label" style="color:var(--orange)">⚡ Exercice</div>
+        <div class="tag-row" id="form-exercice"></div>
+      </div>
+
+      <div id="form-error" class="error-msg" style="display:none"></div>
+      <div id="form-success" class="success-msg" style="display:none"></div>
+      <button class="btn-primary" onclick="submitVideo()" style="width:100%;margin-top:8px">Ajouter la vidéo</button>
+    </div>
+  </div>
+
+  <!-- MANAGE VIEW -->
+  <div class="view" id="view-manage">
+    <div class="form-wrap">
+      <div class="form-title">Gérer les tags</div>
+
+      <div class="manage-add-row">
+        <select class="form-select" id="new-tag-cat">
+          <option value="niveau">📊 Niveau</option>
+          <option value="technique">🏓 Technique</option>
+          <option value="exercice">⚡ Exercice</option>
+        </select>
+        <input class="form-input" id="new-tag-val" placeholder="Nouveau tag..." style="flex:1;margin-bottom:0" onkeydown="if(event.key==='Enter')addTag()">
+        <button class="btn-teal" onclick="addTag()">Ajouter</button>
+      </div>
+
+      <div id="manage-cats"></div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ─── DATA ──────────────────────────────────────────────────────────────────────
+const DEFAULT_TAGS = {
+  niveau: ["Débutant", "Intermédiaire", "Avancé", "Élite"],
+  technique: ["Coup droit", "Revers", "Service", "Smash", "Lob", "Défense", "Contre"],
+  exercice: ["Régularité", "Multi-balles", "Match", "Footwork", "Technique pure", "Tactique"],
+};
+
+let videos = [];
+let tags = JSON.parse(JSON.stringify(DEFAULT_TAGS));
+let filters = { niveau: [], technique: [], exercice: [] };
+let formTags = { niveau: [], technique: [], exercice: [] };
+let playingVideoId = null;
+
+const CAT_META = {
+  niveau:    { color: "var(--accent)", label: "Niveau",    emoji: "📊" },
+  technique: { color: "var(--teal)",   label: "Technique", emoji: "🏓" },
+  exercice:  { color: "var(--orange)", label: "Exercice",  emoji: "⚡" },
+};
+
+// ─── STORAGE ───────────────────────────────────────────────────────────────────
+const VKEY = "pinglib_videos_v1";
+const TKEY = "pinglib_tags_v1";
+
+function saveVideos() { localStorage.setItem(VKEY, JSON.stringify(videos)); }
+function saveTags()   { localStorage.setItem(TKEY, JSON.stringify(tags));   }
+
+function loadData() {
+  try {
+    const v = localStorage.getItem(VKEY);
+    const t = localStorage.getItem(TKEY);
+    if (v) videos = JSON.parse(v);
+    if (t) tags = JSON.parse(t);
+  } catch(e) {}
+}
+
+// ─── NAVIGATION ────────────────────────────────────────────────────────────────
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.getElementById('btn-' + name).classList.add('active');
+  if (name === 'library') renderLibrary();
+  if (name === 'manage') renderManage();
+  if (name === 'add') renderFormTags();
+}
+
+// ─── YOUTUBE HELPERS ───────────────────────────────────────────────────────────
+function getYouTubeId(url) {
+  const m = url.match(/(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=|\/watch\?.+&v=))([\w-]{11})/);
+  return m ? m[1] : null;
+}
+function thumb(id) { return `https://img.youtube.com/vi/${id}/mqdefault.jpg`; }
+
+// ─── LIBRARY ───────────────────────────────────────────────────────────────────
+function renderLibrary() {
+  renderFilterTags();
+  const search = document.getElementById('search-input').value.toLowerCase();
+  const hasFilter = filters.niveau.length || filters.technique.length || filters.exercice.length;
+  document.getElementById('clear-filters-btn').style.display = hasFilter ? 'block' : 'none';
+
+  const filtered = videos.filter(v => {
+    const matchS = !search || v.title.toLowerCase().includes(search) || (v.notes||'').toLowerCase().includes(search);
+    const mN = !filters.niveau.length    || filters.niveau.some(f => v.niveau.includes(f));
+    const mT = !filters.technique.length || filters.technique.some(f => v.technique.includes(f));
+    const mE = !filters.exercice.length  || filters.exercice.some(f => v.exercice.includes(f));
+    return matchS && mN && mT && mE;
+  });
+
+  const statsBar = document.getElementById('stats-bar');
+  statsBar.innerHTML = `<div class="stat-item"><strong>${videos.length}</strong> vidéos</div>
+    ${hasFilter || search ? `<div class="stat-item"><strong>${filtered.length}</strong> résultat${filtered.length>1?'s':''}</div>` : ''}`;
+
+  const grid = document.getElementById('video-grid');
+  const empty = document.getElementById('empty-state');
+  const emptyText = document.getElementById('empty-text');
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    emptyText.textContent = videos.length === 0 ? 'Aucune vidéo pour l\'instant' : 'Aucun résultat pour ces filtres';
+    document.querySelector('#empty-state .btn-primary').style.display = videos.length === 0 ? 'inline-block' : 'none';
+  } else {
+    empty.style.display = 'none';
+    grid.innerHTML = filtered.map(v => cardHTML(v)).join('');
+  }
+}
+
+function cardHTML(v) {
+  const tagsHTML = ['niveau','technique','exercice'].map(cat =>
+    (v[cat]||[]).map(t => `<span class="card-tag ${cat}">${t}</span>`).join('')
+  ).join('');
+
+  const date = new Date(v.addedAt).toLocaleDateString('fr-FR');
+
+  return `<div class="card" id="card-${v.id}">
+    <div class="thumb-wrap" id="thumb-${v.id}" onclick="togglePlay('${v.id}')">
+      <img src="${thumb(v.youtubeId)}" alt="${escHtml(v.title)}" loading="lazy">
+      <div class="play-overlay"><div class="play-btn-circle">▶</div></div>
+    </div>
+    <div class="card-body">
+      <div class="card-title">${escHtml(v.title)}</div>
+      ${v.notes ? `<div class="card-notes">${escHtml(v.notes)}</div>` : ''}
+      <div class="card-tags">${tagsHTML}</div>
+      <div class="card-footer">
+        <span class="card-date">${date}</span>
+        <div class="card-actions" id="actions-${v.id}">
+          <button class="btn-icon" onclick="confirmDelete('${v.id}')" title="Supprimer">🗑</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function togglePlay(id) {
+  const wrap = document.getElementById('thumb-' + id);
+  if (!wrap) return;
+  if (playingVideoId === id) {
+    // stop
+    const v = videos.find(x => x.id === id);
+    if (v) wrap.innerHTML = `<img src="${thumb(v.youtubeId)}" alt="${escHtml(v.title)}" loading="lazy">
+      <div class="play-overlay"><div class="play-btn-circle">▶</div></div>`;
+    playingVideoId = null;
+  } else {
+    // stop previous
+    if (playingVideoId) {
+      const prev = videos.find(x => x.id === playingVideoId);
+      const prevWrap = document.getElementById('thumb-' + playingVideoId);
+      if (prev && prevWrap) prevWrap.innerHTML = `<img src="${thumb(prev.youtubeId)}" alt="" loading="lazy">
+        <div class="play-overlay"><div class="play-btn-circle">▶</div></div>`;
+    }
+    wrap.outerHTML = `<div class="iframe-wrap" id="thumb-${id}">
+      <iframe src="https://www.youtube.com/embed/${videos.find(x=>x.id===id).youtubeId}?autoplay=1"
+        allow="autoplay; encrypted-media" allowfullscreen></iframe></div>`;
+    playingVideoId = id;
+  }
+}
+
+function confirmDelete(id) {
+  const actions = document.getElementById('actions-' + id);
+  if (!actions) return;
+  actions.innerHTML = `<span class="confirm-text">Supprimer ?</span>
+    <button class="btn-yes" onclick="deleteVideo('${id}')">Oui</button>
+    <button class="btn-no" onclick="cancelDelete('${id}')">Non</button>`;
+}
+function cancelDelete(id) {
+  const actions = document.getElementById('actions-' + id);
+  if (actions) actions.innerHTML = `<button class="btn-icon" onclick="confirmDelete('${id}')" title="Supprimer">🗑</button>`;
+}
+function deleteVideo(id) {
+  videos = videos.filter(v => v.id !== id);
+  saveVideos();
+  renderLibrary();
+}
+
+// ─── FILTERS ───────────────────────────────────────────────────────────────────
+function renderFilterTags() {
+  ['niveau','technique','exercice'].forEach(cat => {
+    const el = document.getElementById('filter-' + cat);
+    el.innerHTML = (tags[cat]||[]).map(val => {
+      const active = filters[cat].includes(val);
+      return `<button class="tag-pill ${active ? 'active-'+cat : ''}" onclick="toggleFilter('${cat}','${escAttr(val)}')">${escHtml(val)}</button>`;
+    }).join('');
+  });
+}
+
+function toggleFilter(cat, val) {
+  const i = filters[cat].indexOf(val);
+  if (i === -1) filters[cat].push(val); else filters[cat].splice(i,1);
+  renderLibrary();
+}
+function clearFilters() {
+  filters = { niveau: [], technique: [], exercice: [] };
+  document.getElementById('search-input').value = '';
+  renderLibrary();
+}
+
+// ─── FORM ──────────────────────────────────────────────────────────────────────
+function renderFormTags() {
+  ['niveau','technique','exercice'].forEach(cat => {
+    const el = document.getElementById('form-' + cat);
+    el.innerHTML = (tags[cat]||[]).map(val => {
+      const active = formTags[cat].includes(val);
+      return `<button class="tag-pill ${active ? 'active-'+cat : ''}" onclick="toggleFormTag('${cat}','${escAttr(val)}')">${escHtml(val)}</button>`;
+    }).join('');
+  });
+}
+
+function toggleFormTag(cat, val) {
+  const i = formTags[cat].indexOf(val);
+  if (i === -1) formTags[cat].push(val); else formTags[cat].splice(i,1);
+  renderFormTags();
+}
+
+function handleUrlInput() {
+  const url = document.getElementById('add-url').value;
+  const id = getYouTubeId(url);
+  const preview = document.getElementById('add-preview');
+  const img = document.getElementById('add-preview-img');
+  if (id) {
+    img.src = thumb(id);
+    preview.style.display = 'block';
+  } else {
+    preview.style.display = 'none';
+  }
+}
+
+function submitVideo() {
+  const url   = document.getElementById('add-url').value.trim();
+  const title = document.getElementById('add-title').value.trim();
+  const notes = document.getElementById('add-notes').value.trim();
+  const errEl = document.getElementById('form-error');
+  const okEl  = document.getElementById('form-success');
+  errEl.style.display = 'none';
+  okEl.style.display = 'none';
+
+  const ytId = getYouTubeId(url);
+  if (!ytId)    { errEl.textContent = 'URL YouTube invalide'; errEl.style.display='block'; return; }
+  if (!title)   { errEl.textContent = 'Le titre est requis';  errEl.style.display='block'; return; }
+
+  const video = {
+    id: Date.now().toString(),
+    youtubeId: ytId,
+    title, notes,
+    niveau:    [...formTags.niveau],
+    technique: [...formTags.technique],
+    exercice:  [...formTags.exercice],
+    addedAt: new Date().toISOString(),
+  };
+
+  videos.unshift(video);
+  saveVideos();
+
+  // reset form
+  document.getElementById('add-url').value = '';
+  document.getElementById('add-title').value = '';
+  document.getElementById('add-notes').value = '';
+  document.getElementById('add-preview').style.display = 'none';
+  formTags = { niveau: [], technique: [], exercice: [] };
+  renderFormTags();
+
+  okEl.textContent = `✓ "${title}" ajoutée avec succès !`;
+  okEl.style.display = 'block';
+  setTimeout(() => { okEl.style.display = 'none'; }, 3000);
+}
+
+// ─── MANAGE ────────────────────────────────────────────────────────────────────
+function renderManage() {
+  const el = document.getElementById('manage-cats');
+  el.innerHTML = ['niveau','technique','exercice'].map(cat => {
+    const m = CAT_META[cat];
+    const tagsHTML = (tags[cat]||[]).map(val =>
+      `<span class="manageable-tag">${escHtml(val)}<button class="remove-tag-btn" onclick="removeTag('${cat}','${escAttr(val)}')">×</button></span>`
+    ).join('');
+    return `<div class="manage-cat">
+      <div class="manage-cat-title" style="color:${m.color}">${m.emoji} ${m.label}</div>
+      <div>${tagsHTML}</div>
+    </div>`;
+  }).join('');
+}
+
+function addTag() {
+  const cat = document.getElementById('new-tag-cat').value;
+  const val = document.getElementById('new-tag-val').value.trim();
+  if (!val) return;
+  if (!(tags[cat]||[]).includes(val)) {
+    if (!tags[cat]) tags[cat] = [];
+    tags[cat].push(val);
+    saveTags();
+  }
+  document.getElementById('new-tag-val').value = '';
+  renderManage();
+  renderFormTags();
+}
+
+function removeTag(cat, val) {
+  tags[cat] = (tags[cat]||[]).filter(x => x !== val);
+  saveTags();
+  renderManage();
+  renderLibrary();
+  renderFormTags();
+}
+
+// ─── UTILS ─────────────────────────────────────────────────────────────────────
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escAttr(s) { return String(s).replace(/'/g,"\\'"); }
+
+// ─── INIT ──────────────────────────────────────────────────────────────────────
+loadData();
+renderLibrary();
+</script>
+</body>
+</html>
