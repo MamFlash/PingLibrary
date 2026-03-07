@@ -16,15 +16,38 @@
   body { background: var(--bg); color: var(--text); font-family: var(--font-body); min-height: 100vh; font-size: 14px; }
   body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E"); opacity:0.025; pointer-events:none; z-index:9999; }
 
+  /* AUTH SCREEN */
+  #auth-screen { position:fixed; inset:0; background:var(--bg); z-index:500; display:flex; align-items:center; justify-content:center; padding:20px; }
+  .auth-box { width:100%; max-width:400px; }
+  .auth-logo { text-align:center; margin-bottom:36px; }
+  .auth-logo-icon { font-size:48px; margin-bottom:8px; }
+  .auth-logo-name { font-family:var(--font-display); font-size:32px; font-weight:800; color:var(--accent); }
+  .auth-logo-sub { font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; margin-top:4px; }
+  .auth-tabs { display:flex; gap:0; margin-bottom:28px; border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+  .auth-tab { flex:1; background:transparent; border:none; color:var(--muted); padding:11px; cursor:pointer; font-family:var(--font-display); font-size:13px; font-weight:600; transition:all 0.18s; }
+  .auth-tab.active { background:var(--accent); color:#080808; }
+  .auth-label { display:block; font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; font-family:var(--font-display); }
+  .auth-input { width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:10px; color:var(--text); padding:12px 14px; font-family:var(--font-body); font-size:14px; outline:none; margin-bottom:16px; transition:border-color 0.2s; }
+  .auth-input:focus { border-color:#333; }
+  .auth-btn { width:100%; background:var(--accent); color:#080808; border:none; padding:14px; border-radius:10px; cursor:pointer; font-family:var(--font-display); font-size:15px; font-weight:700; margin-top:4px; transition:transform 0.15s, box-shadow 0.15s; }
+  .auth-btn:hover { transform:translateY(-1px); box-shadow:0 4px 20px rgba(212,255,69,0.3); }
+  .auth-error { color:var(--orange); font-size:13px; margin-bottom:14px; padding:10px 14px; background:rgba(255,92,58,0.08); border-radius:8px; border:1px solid rgba(255,92,58,0.2); display:none; }
+  .auth-loading { text-align:center; color:var(--muted); font-size:13px; padding:12px; display:none; }
+
+  /* HEADER */
   header { position:sticky; top:0; z-index:100; background:rgba(8,8,8,0.92); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); padding:0 28px; display:flex; align-items:center; justify-content:space-between; height:64px; gap:16px; flex-wrap:wrap; }
   .logo-wrap { display:flex; align-items:center; gap:10px; }
   .logo-icon { font-size:28px; }
   .logo-name { font-family:var(--font-display); font-size:22px; font-weight:800; color:var(--accent); letter-spacing:-0.5px; }
   .logo-sub { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; }
-  nav { display:flex; gap:6px; }
+  nav { display:flex; gap:6px; align-items:center; }
   .nav-btn { font-family:var(--font-display); font-size:13px; font-weight:600; background:transparent; border:1px solid var(--border); color:var(--muted); padding:7px 16px; border-radius:8px; cursor:pointer; transition:all 0.18s; }
   .nav-btn:hover { border-color:#333; color:var(--text); }
   .nav-btn.active { background:var(--accent); color:#080808; border-color:var(--accent); }
+  .user-info { display:flex; align-items:center; gap:8px; }
+  .user-email { font-size:11px; color:var(--muted); max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .btn-logout { background:transparent; border:1px solid var(--border); color:var(--muted); padding:6px 12px; border-radius:8px; cursor:pointer; font-size:11px; font-family:var(--font-body); transition:all 0.18s; white-space:nowrap; }
+  .btn-logout:hover { border-color:var(--orange); color:var(--orange); }
 
   main { max-width:1160px; margin:0 auto; padding:28px 24px 60px; }
   .view { display:none; animation:fadeIn 0.2s ease; }
@@ -116,13 +139,19 @@
   .btn-save { background:var(--teal); color:#080808; border:none; padding:12px 24px; border-radius:10px; cursor:pointer; font-family:var(--font-display); font-weight:700; font-size:14px; flex:1; }
   .btn-cancel { background:var(--bg3); border:1px solid var(--border); color:var(--muted); padding:12px 20px; border-radius:10px; cursor:pointer; font-family:var(--font-body); font-size:14px; }
 
+  /* LOADING OVERLAY */
+  #app-loading { position:fixed; inset:0; background:var(--bg); z-index:400; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:16px; }
+  .spinner { width:36px; height:36px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.7s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .loading-text { color:var(--muted); font-size:13px; font-family:var(--font-display); }
+
   ::-webkit-scrollbar { width:5px; } ::-webkit-scrollbar-track { background:var(--bg); } ::-webkit-scrollbar-thumb { background:#222; border-radius:3px; }
 
   @media (max-width:700px) {
     header { padding:10px 14px; height:auto; gap:8px; }
     .logo-name { font-size:18px; }
     .logo-sub { display:none; }
-    /* Fixed bottom nav on mobile */
+    .user-email { display:none; }
     nav {
       position:fixed; bottom:0; left:0; right:0; z-index:200;
       background:rgba(8,8,8,0.97); backdrop-filter:blur(16px);
@@ -161,78 +190,113 @@
 </head>
 <body>
 
-<header>
-  <div class="logo-wrap">
-    <div class="logo-icon">🏓</div>
-    <div>
-      <div class="logo-name">PingLib</div>
-      <div class="logo-sub">Bibliothèque des coachs</div>
-    </div>
-  </div>
-  <nav>
-    <button class="nav-btn active" onclick="showView('library')" id="btn-library">Vidéos</button>
-    <button class="nav-btn" onclick="showView('add')" id="btn-add">+ Ajouter</button>
-    <button class="nav-btn" onclick="showView('manage')" id="btn-manage">⚙ Tags</button>
-  </nav>
-</header>
+<!-- LOADING -->
+<div id="app-loading">
+  <div class="spinner"></div>
+  <div class="loading-text">Chargement...</div>
+</div>
 
-<main>
-  <div class="view active" id="view-library">
-    <div class="toolbar">
-      <input class="search-input" id="search-input" placeholder="Rechercher une vidéo..." oninput="renderLibrary()">
-      <button class="clear-btn" id="clear-filters-btn" onclick="clearFilters()" style="display:none">Effacer filtres</button>
+<!-- AUTH SCREEN -->
+<div id="auth-screen" style="display:none">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">🏓</div>
+      <div class="auth-logo-name">PingLib</div>
+      <div class="auth-logo-sub">Bibliothèque des coachs</div>
     </div>
-    <div class="filter-section" id="filter-section"></div>
-    <div class="stats-bar" id="stats-bar"></div>
-    <div class="grid" id="video-grid"></div>
-    <div id="empty-state" style="display:none">
-      <div class="empty">
-        <div class="empty-icon">🏓</div>
-        <div class="empty-text" id="empty-text">Aucune vidéo pour l'instant</div>
-        <button class="btn-primary" onclick="showView('add')">Ajouter la première vidéo</button>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Connexion</button>
+      <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Inscription</button>
+    </div>
+    <div id="auth-error" class="auth-error"></div>
+    <label class="auth-label">Adresse e-mail</label>
+    <input class="auth-input" id="auth-email" type="email" placeholder="coach@exemple.com" onkeydown="if(event.key==='Enter')authSubmit()">
+    <label class="auth-label">Mot de passe</label>
+    <input class="auth-input" id="auth-password" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')authSubmit()">
+    <div id="auth-loading" class="auth-loading">⏳ Connexion en cours...</div>
+    <button class="auth-btn" onclick="authSubmit()" id="auth-submit-btn">Se connecter</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none">
+  <header>
+    <div class="logo-wrap">
+      <div class="logo-icon">🏓</div>
+      <div>
+        <div class="logo-name">PingLib</div>
+        <div class="logo-sub">Bibliothèque des coachs</div>
       </div>
     </div>
-  </div>
-
-  <div class="view" id="view-add">
-    <div class="form-wrap">
-      <div class="form-title">Ajouter une vidéo</div>
-      <label class="form-label">URL YouTube</label>
-      <input class="form-input" id="add-url" placeholder="https://youtube.com/watch?v=..." oninput="handleUrlInput()">
-      <div id="add-preview" style="display:none" class="preview-wrap"><img id="add-preview-img" src="" alt="preview"></div>
-      <label class="form-label">Titre</label>
-      <input class="form-input" id="add-title" placeholder="Ex: Cours revers topspin débutants">
-      <label class="form-label">Notes (optionnel)</label>
-      <textarea class="form-input" id="add-notes" placeholder="Remarques, contexte..."></textarea>
-      <div id="add-tag-sections"></div>
-      <div id="form-error" class="error-msg" style="display:none"></div>
-      <div id="form-success" class="success-msg" style="display:none"></div>
-      <button class="btn-primary" onclick="submitVideo()" style="width:100%;margin-top:8px">Ajouter la vidéo</button>
+    <nav>
+      <button class="nav-btn active" onclick="showView('library')" id="btn-library">Vidéos</button>
+      <button class="nav-btn" onclick="showView('add')" id="btn-add">+ Ajouter</button>
+      <button class="nav-btn" onclick="showView('manage')" id="btn-manage">⚙ Tags</button>
+    </nav>
+    <div class="user-info">
+      <span class="user-email" id="user-email-display"></span>
+      <button class="btn-logout" onclick="logout()">Déconnexion</button>
     </div>
-  </div>
+  </header>
 
-  <div class="view" id="view-manage">
-    <div class="form-wrap">
-      <div class="form-title">Gérer les tags</div>
-      <div class="manage-section">
-        <div class="manage-section-title">+ Nouvelle catégorie</div>
-        <div class="manage-add-row">
-          <input class="form-input" id="new-cat-name" placeholder="Ex: Âge, Matériel, Pays..." style="flex:1;margin-bottom:0" onkeydown="if(event.key==='Enter')addCategory()">
-          <button class="btn-primary" onclick="addCategory()">Créer</button>
+  <main>
+    <div class="view active" id="view-library">
+      <div class="toolbar">
+        <input class="search-input" id="search-input" placeholder="Rechercher une vidéo..." oninput="renderLibrary()">
+        <button class="clear-btn" id="clear-filters-btn" onclick="clearFilters()" style="display:none">Effacer filtres</button>
+      </div>
+      <div class="filter-section" id="filter-section"></div>
+      <div class="stats-bar" id="stats-bar"></div>
+      <div class="grid" id="video-grid"></div>
+      <div id="empty-state" style="display:none">
+        <div class="empty">
+          <div class="empty-icon">🏓</div>
+          <div class="empty-text" id="empty-text">Aucune vidéo pour l'instant</div>
+          <button class="btn-primary" onclick="showView('add')">Ajouter la première vidéo</button>
         </div>
       </div>
-      <div class="manage-section">
-        <div class="manage-section-title">+ Nouveau tag dans une catégorie</div>
-        <div class="manage-add-row">
-          <select class="form-select" id="new-tag-cat"></select>
-          <input class="form-input" id="new-tag-val" placeholder="Nouveau tag..." style="flex:1;margin-bottom:0" onkeydown="if(event.key==='Enter')addTag()">
-          <button class="btn-teal" onclick="addTag()">Ajouter</button>
-        </div>
-      </div>
-      <div id="manage-cats"></div>
     </div>
-  </div>
-</main>
+
+    <div class="view" id="view-add">
+      <div class="form-wrap">
+        <div class="form-title">Ajouter une vidéo</div>
+        <label class="form-label">URL YouTube</label>
+        <input class="form-input" id="add-url" placeholder="https://youtube.com/watch?v=..." oninput="handleUrlInput()">
+        <div id="add-preview" style="display:none" class="preview-wrap"><img id="add-preview-img" src="" alt="preview"></div>
+        <label class="form-label">Titre</label>
+        <input class="form-input" id="add-title" placeholder="Ex: Cours revers topspin débutants">
+        <label class="form-label">Notes (optionnel)</label>
+        <textarea class="form-input" id="add-notes" placeholder="Remarques, contexte..."></textarea>
+        <div id="add-tag-sections"></div>
+        <div id="form-error" class="error-msg" style="display:none"></div>
+        <div id="form-success" class="success-msg" style="display:none"></div>
+        <button class="btn-primary" onclick="submitVideo()" style="width:100%;margin-top:8px">Ajouter la vidéo</button>
+      </div>
+    </div>
+
+    <div class="view" id="view-manage">
+      <div class="form-wrap">
+        <div class="form-title">Gérer les tags</div>
+        <div class="manage-section">
+          <div class="manage-section-title">+ Nouvelle catégorie</div>
+          <div class="manage-add-row">
+            <input class="form-input" id="new-cat-name" placeholder="Ex: Âge, Matériel, Pays..." style="flex:1;margin-bottom:0" onkeydown="if(event.key==='Enter')addCategory()">
+            <button class="btn-primary" onclick="addCategory()">Créer</button>
+          </div>
+        </div>
+        <div class="manage-section">
+          <div class="manage-section-title">+ Nouveau tag dans une catégorie</div>
+          <div class="manage-add-row">
+            <select class="form-select" id="new-tag-cat"></select>
+            <input class="form-input" id="new-tag-val" placeholder="Nouveau tag..." style="flex:1;margin-bottom:0" onkeydown="if(event.key==='Enter')addTag()">
+            <button class="btn-teal" onclick="addTag()">Ajouter</button>
+          </div>
+        </div>
+        <div id="manage-cats"></div>
+      </div>
+    </div>
+  </main>
+</div>
 
 <!-- EDIT MODAL -->
 <div class="modal-overlay" id="edit-modal" style="display:none" onclick="closeModalOnOverlay(event)">
@@ -250,99 +314,234 @@
   </div>
 </div>
 
-<script>
-const VKEY="pinglib_videos_v2", TKEY="pinglib_tags_v2", CKEY="pinglib_cats_v2";
-const DEFAULT_CATS=[{id:"niveau",label:"Niveau",color:"#d4ff45"},{id:"technique",label:"Technique",color:"#3fffd0"},{id:"exercice",label:"Exercice",color:"#ff5c3a"}];
-const DEFAULT_TAGS={niveau:["Débutant","Intermédiaire","Avancé","Élite"],technique:["Coup droit","Revers","Service","Smash","Lob","Défense","Contre"],exercice:["Régularité","Multi-balles","Match","Footwork","Technique pure","Tactique"]};
-const CAT_COLORS=["#d4ff45","#3fffd0","#ff5c3a","#c084fc","#fb923c","#38bdf8","#f472b6","#a3e635"];
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, deleteDoc, updateDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-let videos=[], tags={}, cats=[], filters={}, formTags={}, editTags={}, editVideoId=null, playingVideoId=null;
+const firebaseConfig = {
+  apiKey: "AIzaSyB3-WPcINcunzYY6O69BdfWk2T5LQxu2oA",
+  authDomain: "pinglibrary.firebaseapp.com",
+  projectId: "pinglibrary",
+  storageBucket: "pinglibrary.firebasestorage.app",
+  messagingSenderId: "1082878029758",
+  appId: "1:1082878029758:web:50379385d594870d7113ef"
+};
 
-function nextColor(){return CAT_COLORS[cats.length%CAT_COLORS.length];}
-function saveVideos(){localStorage.setItem(VKEY,JSON.stringify(videos));}
-function saveTags(){localStorage.setItem(TKEY,JSON.stringify(tags));}
-function saveCats(){localStorage.setItem(CKEY,JSON.stringify(cats));}
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-function loadData(){
-  try{
-    const v=localStorage.getItem(VKEY), t=localStorage.getItem(TKEY), c=localStorage.getItem(CKEY);
-    videos=v?JSON.parse(v):[];
-    tags=t?JSON.parse(t):JSON.parse(JSON.stringify(DEFAULT_TAGS));
-    cats=c?JSON.parse(c):JSON.parse(JSON.stringify(DEFAULT_CATS));
-  }catch(e){videos=[];tags=JSON.parse(JSON.stringify(DEFAULT_TAGS));cats=JSON.parse(JSON.stringify(DEFAULT_CATS));}
-  cats.forEach(c=>{if(!filters[c.id])filters[c.id]=[];if(!formTags[c.id])formTags[c.id]=[];if(!tags[c.id])tags[c.id]=[];});
+// ─── CONSTANTES ───────────────────────────────────────────────
+const DEFAULT_CATS = [{id:"niveau",label:"Niveau",color:"#d4ff45"},{id:"technique",label:"Technique",color:"#3fffd0"},{id:"exercice",label:"Exercice",color:"#ff5c3a"}];
+const DEFAULT_TAGS = {niveau:["Débutant","Intermédiaire","Avancé","Élite"],technique:["Coup droit","Revers","Service","Smash","Lob","Défense","Contre"],exercice:["Régularité","Multi-balles","Match","Footwork","Technique pure","Tactique"]};
+const CAT_COLORS = ["#d4ff45","#3fffd0","#ff5c3a","#c084fc","#fb923c","#38bdf8","#f472b6","#a3e635"];
+
+// ─── STATE ───────────────────────────────────────────────────
+let currentUser = null;
+let videos = [], tags = {}, cats = [], filters = {}, formTags = {}, editTags = {}, editVideoId = null, playingVideoId = null;
+let authMode = 'login';
+let unsubVideos = null;
+
+// ─── AUTH UI ─────────────────────────────────────────────────
+window.switchAuthTab = function(mode) {
+  authMode = mode;
+  document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+  document.getElementById('tab-signup').classList.toggle('active', mode === 'signup');
+  document.getElementById('auth-submit-btn').textContent = mode === 'login' ? 'Se connecter' : "S'inscrire";
+  document.getElementById('auth-error').style.display = 'none';
+};
+
+window.authSubmit = async function() {
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const errEl = document.getElementById('auth-error');
+  const loadEl = document.getElementById('auth-loading');
+  errEl.style.display = 'none';
+  if (!email || !password) { errEl.textContent = 'Remplis tous les champs.'; errEl.style.display = 'block'; return; }
+  loadEl.style.display = 'block';
+  document.getElementById('auth-submit-btn').disabled = true;
+  try {
+    if (authMode === 'login') {
+      await signInWithEmailAndPassword(auth, email, password);
+    } else {
+      await createUserWithEmailAndPassword(auth, email, password);
+    }
+  } catch(e) {
+    const msgs = {
+      'auth/user-not-found': 'Aucun compte avec cet e-mail.',
+      'auth/wrong-password': 'Mot de passe incorrect.',
+      'auth/invalid-credential': 'E-mail ou mot de passe incorrect.',
+      'auth/email-already-in-use': 'Cet e-mail est déjà utilisé.',
+      'auth/weak-password': 'Le mot de passe doit faire au moins 6 caractères.',
+      'auth/invalid-email': 'Adresse e-mail invalide.',
+    };
+    errEl.textContent = msgs[e.code] || 'Erreur : ' + e.message;
+    errEl.style.display = 'block';
+    loadEl.style.display = 'none';
+    document.getElementById('auth-submit-btn').disabled = false;
+  }
+};
+
+window.logout = async function() {
+  if (unsubVideos) { unsubVideos(); unsubVideos = null; }
+  await signOut(auth);
+};
+
+// ─── AUTH STATE ──────────────────────────────────────────────
+onAuthStateChanged(auth, async (user) => {
+  document.getElementById('app-loading').style.display = 'none';
+  if (user) {
+    currentUser = user;
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('user-email-display').textContent = user.email;
+    await loadUserData();
+  } else {
+    currentUser = null;
+    document.getElementById('auth-screen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+    videos = []; tags = {}; cats = []; filters = {}; formTags = {};
+  }
+});
+
+// ─── FIRESTORE HELPERS ───────────────────────────────────────
+function userDoc(path) {
+  return doc(db, 'users', currentUser.uid, ...path.split('/'));
+}
+function userCol(path) {
+  return collection(db, 'users', currentUser.uid, path);
 }
 
-function showView(name){
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('view-'+name).classList.add('active');
-  document.getElementById('btn-'+name).classList.add('active');
-  if(name==='library')renderLibrary();
-  if(name==='manage')renderManage();
-  if(name==='add')renderAddTagSections();
+async function loadUserData() {
+  // Load cats
+  const catsDoc = await getDoc(userDoc('config/cats'));
+  if (catsDoc.exists()) {
+    cats = catsDoc.data().list;
+  } else {
+    cats = JSON.parse(JSON.stringify(DEFAULT_CATS));
+    await setDoc(userDoc('config/cats'), { list: cats });
+  }
+
+  // Load tags
+  const tagsDoc = await getDoc(userDoc('config/tags'));
+  if (tagsDoc.exists()) {
+    tags = tagsDoc.data().map;
+  } else {
+    tags = JSON.parse(JSON.stringify(DEFAULT_TAGS));
+    await setDoc(userDoc('config/tags'), { map: tags });
+  }
+
+  cats.forEach(c => { if (!filters[c.id]) filters[c.id] = []; if (!formTags[c.id]) formTags[c.id] = []; if (!tags[c.id]) tags[c.id] = []; });
+
+  // Listen to videos in real-time
+  if (unsubVideos) unsubVideos();
+  const vq = query(userCol('videos'), orderBy('addedAt', 'desc'));
+  unsubVideos = onSnapshot(vq, (snap) => {
+    videos = snap.docs.map(d => ({ ...d.data(), id: d.id }));
+    renderLibrary();
+  });
+
+  renderLibrary();
+  renderManage();
+  renderAddTagSections();
 }
 
-function getYouTubeId(url){const m=url.match(/(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=|\/watch\?.+&v=))([\w-]{11})/);return m?m[1]:null;}
-function thumb(id){return`https://img.youtube.com/vi/${id}/mqdefault.jpg`;}
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function escA(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
-function getCat(id){return cats.find(c=>c.id===id);}
+async function saveCats() {
+  await setDoc(userDoc('config/cats'), { list: cats });
+}
+async function saveTags() {
+  await setDoc(userDoc('config/tags'), { map: tags });
+}
+async function saveVideo(video) {
+  const { id, ...data } = video;
+  await setDoc(doc(userCol('videos'), id), data);
+}
+async function removeVideo(id) {
+  await deleteDoc(doc(userCol('videos'), id));
+}
+async function updateVideo(id, data) {
+  const { id: _id, ...rest } = data;
+  await setDoc(doc(userCol('videos'), id), rest);
+}
 
-function renderTagSections(containerId, selectedObj, toggleFn){
-  document.getElementById(containerId).innerHTML=cats.map(cat=>{
-    const sel=selectedObj[cat.id]||[];
-    const pills=(tags[cat.id]||[]).map(val=>{
-      const active=sel.includes(val);
-      return`<button class="tag-pill" style="${active?`background:${cat.color};color:#080808;border-color:${cat.color};font-weight:600`:''}"
+// ─── APP LOGIC ────────────────────────────────────────────────
+window.nextColor = function() { return CAT_COLORS[cats.length % CAT_COLORS.length]; };
+window.getCat = function(id) { return cats.find(c => c.id === id); };
+
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escA(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+
+window.showView = function(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.getElementById('btn-' + name).classList.add('active');
+  if (name === 'library') renderLibrary();
+  if (name === 'manage') renderManage();
+  if (name === 'add') renderAddTagSections();
+};
+
+function getYouTubeId(url) { const m = url.match(/(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=|\/watch\?.+&v=))([\w-]{11})/); return m ? m[1] : null; }
+function thumb(id) { return `https://img.youtube.com/vi/${id}/mqdefault.jpg`; }
+
+window.renderTagSections = function(containerId, selectedObj, toggleFn) {
+  document.getElementById(containerId).innerHTML = cats.map(cat => {
+    const sel = selectedObj[cat.id] || [];
+    const pills = (tags[cat.id] || []).map(val => {
+      const active = sel.includes(val);
+      return `<button class="tag-pill" style="${active ? `background:${cat.color};color:#080808;border-color:${cat.color};font-weight:600` : ''}"
         onclick="${toggleFn}('${escA(cat.id)}','${escA(val)}')">${esc(val)}</button>`;
     }).join('');
-    return`<div class="form-section">
-      <div class="form-section-label" style="color:${cat.color}">${esc(cat.label)}</div>
-      <div class="tag-row">${pills}</div></div>`;
+    return `<div class="form-section"><div class="form-section-label" style="color:${cat.color}">${esc(cat.label)}</div><div class="tag-row">${pills}</div></div>`;
   }).join('');
-}
+};
 
-function renderLibrary(){
+window.renderLibrary = function() {
   renderFilterSection();
-  const search=document.getElementById('search-input').value.toLowerCase();
-  const hasFilter=cats.some(c=>(filters[c.id]||[]).length>0);
-  document.getElementById('clear-filters-btn').style.display=(hasFilter||search)?'block':'none';
-  const filtered=videos.filter(v=>{
-    const mS=!search||v.title.toLowerCase().includes(search)||(v.notes||'').toLowerCase().includes(search);
-    const mC=cats.every(cat=>{const f=filters[cat.id]||[];return f.length===0||f.some(t=>(v[cat.id]||[]).includes(t));});
-    return mS&&mC;
+  const search = (document.getElementById('search-input') || {value:''}).value.toLowerCase();
+  const hasFilter = cats.some(c => (filters[c.id] || []).length > 0);
+  const clearBtn = document.getElementById('clear-filters-btn');
+  if (clearBtn) clearBtn.style.display = (hasFilter || search) ? 'block' : 'none';
+  const filtered = videos.filter(v => {
+    const mS = !search || v.title.toLowerCase().includes(search) || (v.notes || '').toLowerCase().includes(search);
+    const mC = cats.every(cat => { const f = filters[cat.id] || []; return f.length === 0 || f.some(t => (v[cat.id] || []).includes(t)); });
+    return mS && mC;
   });
-  document.getElementById('stats-bar').innerHTML=`<div class="stat-item"><strong>${videos.length}</strong> vidéo${videos.length>1?'s':''}</div>${(hasFilter||search)?`<div class="stat-item"><strong>${filtered.length}</strong> résultat${filtered.length>1?'s':''}</div>`:''}`;
-  const grid=document.getElementById('video-grid'), empty=document.getElementById('empty-state');
-  if(filtered.length===0){
-    grid.innerHTML=''; empty.style.display='block';
-    document.getElementById('empty-text').textContent=videos.length===0?'Aucune vidéo pour l\'instant':'Aucun résultat pour ces filtres';
-    document.querySelector('#empty-state .btn-primary').style.display=videos.length===0?'inline-block':'none';
-  }else{empty.style.display='none';grid.innerHTML=filtered.map(v=>cardHTML(v)).join('');}
-}
+  const statsBar = document.getElementById('stats-bar');
+  if (statsBar) statsBar.innerHTML = `<div class="stat-item"><strong>${videos.length}</strong> vidéo${videos.length > 1 ? 's' : ''}</div>${(hasFilter || search) ? `<div class="stat-item"><strong>${filtered.length}</strong> résultat${filtered.length > 1 ? 's' : ''}</div>` : ''}`;
+  const grid = document.getElementById('video-grid'), empty = document.getElementById('empty-state');
+  if (!grid) return;
+  if (filtered.length === 0) {
+    grid.innerHTML = ''; empty.style.display = 'block';
+    document.getElementById('empty-text').textContent = videos.length === 0 ? 'Aucune vidéo pour l\'instant' : 'Aucun résultat pour ces filtres';
+    document.querySelector('#empty-state .btn-primary').style.display = videos.length === 0 ? 'inline-block' : 'none';
+  } else { empty.style.display = 'none'; grid.innerHTML = filtered.map(v => cardHTML(v)).join(''); }
+};
 
-function renderFilterSection(){
-  document.getElementById('filter-section').innerHTML=cats.map(cat=>{
-    const pills=(tags[cat.id]||[]).map(val=>{
-      const active=(filters[cat.id]||[]).includes(val);
-      return`<button class="tag-pill" style="${active?`background:${cat.color};color:#080808;border-color:${cat.color};font-weight:600`:''}"
+function renderFilterSection() {
+  const el = document.getElementById('filter-section'); if (!el) return;
+  el.innerHTML = cats.map(cat => {
+    const pills = (tags[cat.id] || []).map(val => {
+      const active = (filters[cat.id] || []).includes(val);
+      return `<button class="tag-pill" style="${active ? `background:${cat.color};color:#080808;border-color:${cat.color};font-weight:600` : ''}"
         onclick="toggleFilter('${escA(cat.id)}','${escA(val)}')">${esc(val)}</button>`;
     }).join('');
-    return`<div class="filter-group"><div class="filter-label" style="color:${cat.color}">${esc(cat.label)}</div><div class="tag-row">${pills}</div></div>`;
+    return `<div class="filter-group"><div class="filter-label" style="color:${cat.color}">${esc(cat.label)}</div><div class="tag-row">${pills}</div></div>`;
   }).join('');
 }
 
-function cardHTML(v){
-  const tagsHTML=cats.map(cat=>(v[cat.id]||[]).map(t=>{const c=getCat(cat.id);return`<span class="card-tag" style="border-color:${c?c.color:'#555'};color:${c?c.color:'#aaa'}">${esc(t)}</span>`;}).join('')).join('');
-  return`<div class="card" id="card-${v.id}">
+function cardHTML(v) {
+  const tagsHTML = cats.map(cat => (v[cat.id] || []).map(t => { const c = getCat(cat.id); return `<span class="card-tag" style="border-color:${c?c.color:'#555'};color:${c?c.color:'#aaa'}">${esc(t)}</span>`; }).join('')).join('');
+  return `<div class="card" id="card-${v.id}">
     <div class="thumb-wrap" id="thumb-${v.id}" onclick="togglePlay('${v.id}')">
       <img src="${thumb(v.youtubeId)}" alt="${esc(v.title)}" loading="lazy">
       <div class="play-overlay"><div class="play-btn-circle">▶</div></div>
     </div>
     <div class="card-body">
       <div class="card-title">${esc(v.title)}</div>
-      ${v.notes?`<div class="card-notes">${esc(v.notes)}</div>`:''}
+      ${v.notes ? `<div class="card-notes">${esc(v.notes)}</div>` : ''}
       <div class="card-tags">${tagsHTML}</div>
       <div class="card-footer">
         <span class="card-date">${new Date(v.addedAt).toLocaleDateString('fr-FR')}</span>
@@ -355,124 +554,133 @@ function cardHTML(v){
   </div>`;
 }
 
-function togglePlay(id){
-  const wrap=document.getElementById('thumb-'+id); if(!wrap)return;
-  if(playingVideoId===id){
-    const v=videos.find(x=>x.id===id);
-    if(v)wrap.outerHTML=`<div class="thumb-wrap" id="thumb-${id}" onclick="togglePlay('${id}')"><img src="${thumb(v.youtubeId)}" alt="" loading="lazy"><div class="play-overlay"><div class="play-btn-circle">▶</div></div></div>`;
-    playingVideoId=null;
-  }else{
-    if(playingVideoId){const p=videos.find(x=>x.id===playingVideoId),pw=document.getElementById('thumb-'+playingVideoId);if(p&&pw)pw.outerHTML=`<div class="thumb-wrap" id="thumb-${playingVideoId}" onclick="togglePlay('${playingVideoId}')"><img src="${thumb(p.youtubeId)}" alt="" loading="lazy"><div class="play-overlay"><div class="play-btn-circle">▶</div></div></div>`;}
-    const v=videos.find(x=>x.id===id);
-    wrap.outerHTML=`<div class="iframe-wrap" id="thumb-${id}"><iframe src="https://www.youtube.com/embed/${v.youtubeId}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>`;
-    playingVideoId=id;
+window.togglePlay = function(id) {
+  const wrap = document.getElementById('thumb-' + id); if (!wrap) return;
+  if (playingVideoId === id) {
+    const v = videos.find(x => x.id === id);
+    if (v) wrap.outerHTML = `<div class="thumb-wrap" id="thumb-${id}" onclick="togglePlay('${id}')"><img src="${thumb(v.youtubeId)}" alt="" loading="lazy"><div class="play-overlay"><div class="play-btn-circle">▶</div></div></div>`;
+    playingVideoId = null;
+  } else {
+    if (playingVideoId) { const p = videos.find(x => x.id === playingVideoId), pw = document.getElementById('thumb-' + playingVideoId); if (p && pw) pw.outerHTML = `<div class="thumb-wrap" id="thumb-${playingVideoId}" onclick="togglePlay('${playingVideoId}')"><img src="${thumb(p.youtubeId)}" alt="" loading="lazy"><div class="play-overlay"><div class="play-btn-circle">▶</div></div></div>`; }
+    const v = videos.find(x => x.id === id);
+    wrap.outerHTML = `<div class="iframe-wrap" id="thumb-${id}"><iframe src="https://www.youtube.com/embed/${v.youtubeId}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>`;
+    playingVideoId = id;
   }
-}
+};
 
-function toggleFilter(cat,val){if(!filters[cat])filters[cat]=[];const i=filters[cat].indexOf(val);if(i===-1)filters[cat].push(val);else filters[cat].splice(i,1);renderLibrary();}
-function clearFilters(){cats.forEach(c=>filters[c.id]=[]);document.getElementById('search-input').value='';renderLibrary();}
-function confirmDelete(id){const a=document.getElementById('actions-'+id);if(a)a.innerHTML=`<span class="confirm-text">Supprimer ?</span><button class="btn-yes" onclick="deleteVideo('${id}')">Oui</button><button class="btn-no" onclick="renderLibrary()">Non</button>`;}
-function deleteVideo(id){videos=videos.filter(v=>v.id!==id);saveVideos();renderLibrary();}
+window.toggleFilter = function(cat, val) { if (!filters[cat]) filters[cat] = []; const i = filters[cat].indexOf(val); if (i === -1) filters[cat].push(val); else filters[cat].splice(i, 1); renderLibrary(); };
+window.clearFilters = function() { cats.forEach(c => filters[c.id] = []); document.getElementById('search-input').value = ''; renderLibrary(); };
 
-function renderAddTagSections(){cats.forEach(c=>{if(!formTags[c.id])formTags[c.id]=[];});renderTagSections('add-tag-sections',formTags,'toggleFormTag');}
-function toggleFormTag(cat,val){if(!formTags[cat])formTags[cat]=[];const i=formTags[cat].indexOf(val);if(i===-1)formTags[cat].push(val);else formTags[cat].splice(i,1);renderAddTagSections();}
-async function handleUrlInput(){
-  const url=document.getElementById('add-url').value.trim();
-  const id=getYouTubeId(url);
-  const p=document.getElementById('add-preview');
-  if(id){
-    document.getElementById('add-preview-img').src=thumb(id);
-    p.style.display='block';
-    // Auto-fetch title via oEmbed if title field is empty
-    const titleField=document.getElementById('add-title');
-    if(!titleField.value.trim()){
-      titleField.value='⏳ Chargement du titre...';
-      try{
-        const res=await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`);
-        if(res.ok){const data=await res.json();titleField.value=data.title||'';}
-        else titleField.value='';
-      }catch(e){titleField.value='';}
+window.confirmDelete = function(id) { const a = document.getElementById('actions-' + id); if (a) a.innerHTML = `<span class="confirm-text">Supprimer ?</span><button class="btn-yes" onclick="deleteVideo('${id}')">Oui</button><button class="btn-no" onclick="renderLibrary()">Non</button>`; };
+window.deleteVideo = async function(id) { await removeVideo(id); };
+
+window.renderAddTagSections = function() { cats.forEach(c => { if (!formTags[c.id]) formTags[c.id] = []; }); renderTagSections('add-tag-sections', formTags, 'toggleFormTag'); };
+window.toggleFormTag = function(cat, val) { if (!formTags[cat]) formTags[cat] = []; const i = formTags[cat].indexOf(val); if (i === -1) formTags[cat].push(val); else formTags[cat].splice(i, 1); renderAddTagSections(); };
+
+window.handleUrlInput = async function() {
+  const url = document.getElementById('add-url').value.trim();
+  const id = getYouTubeId(url);
+  const p = document.getElementById('add-preview');
+  if (id) {
+    document.getElementById('add-preview-img').src = thumb(id);
+    p.style.display = 'block';
+    const titleField = document.getElementById('add-title');
+    if (!titleField.value.trim()) {
+      titleField.value = '⏳ Chargement du titre...';
+      try {
+        const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`);
+        if (res.ok) { const data = await res.json(); titleField.value = data.title || ''; }
+        else titleField.value = '';
+      } catch(e) { titleField.value = ''; }
     }
-  }else{p.style.display='none';}
-}
+  } else { p.style.display = 'none'; }
+};
 
-function submitVideo(){
-  const url=document.getElementById('add-url').value.trim(),title=document.getElementById('add-title').value.trim(),notes=document.getElementById('add-notes').value.trim();
-  const errEl=document.getElementById('form-error'),okEl=document.getElementById('form-success');
-  errEl.style.display='none';okEl.style.display='none';
-  const ytId=getYouTubeId(url);
-  if(!ytId){errEl.textContent='URL YouTube invalide';errEl.style.display='block';return;}
-  if(!title){errEl.textContent='Le titre est requis';errEl.style.display='block';return;}
-  const video={id:Date.now().toString(),youtubeId:ytId,title,notes,addedAt:new Date().toISOString()};
-  cats.forEach(c=>{video[c.id]=[...(formTags[c.id]||[])];});
-  videos.unshift(video);saveVideos();
-  document.getElementById('add-url').value='';document.getElementById('add-title').value='';document.getElementById('add-notes').value='';
-  document.getElementById('add-preview').style.display='none';
-  cats.forEach(c=>formTags[c.id]=[]);renderAddTagSections();
-  okEl.textContent=`✓ "${title}" ajoutée !`;okEl.style.display='block';
-  setTimeout(()=>{okEl.style.display='none';},3000);
-}
+window.submitVideo = async function() {
+  const url = document.getElementById('add-url').value.trim(), title = document.getElementById('add-title').value.trim(), notes = document.getElementById('add-notes').value.trim();
+  const errEl = document.getElementById('form-error'), okEl = document.getElementById('form-success');
+  errEl.style.display = 'none'; okEl.style.display = 'none';
+  const ytId = getYouTubeId(url);
+  if (!ytId) { errEl.textContent = 'URL YouTube invalide'; errEl.style.display = 'block'; return; }
+  if (!title) { errEl.textContent = 'Le titre est requis'; errEl.style.display = 'block'; return; }
+  const video = { youtubeId: ytId, title, notes, addedAt: new Date().toISOString() };
+  cats.forEach(c => { video[c.id] = [...(formTags[c.id] || [])]; });
+  const newDoc = await addDoc(userCol('videos'), video);
+  document.getElementById('add-url').value = ''; document.getElementById('add-title').value = ''; document.getElementById('add-notes').value = '';
+  document.getElementById('add-preview').style.display = 'none';
+  cats.forEach(c => formTags[c.id] = []); renderAddTagSections();
+  okEl.textContent = `✓ "${title}" ajoutée !`; okEl.style.display = 'block';
+  setTimeout(() => { okEl.style.display = 'none'; }, 3000);
+};
 
-function openEdit(id){
-  const v=videos.find(x=>x.id===id);if(!v)return;
-  editVideoId=id;
-  document.getElementById('edit-title').value=v.title;
-  document.getElementById('edit-notes').value=v.notes||'';
-  editTags={};cats.forEach(c=>{editTags[c.id]=[...(v[c.id]||[])];});
-  renderTagSections('edit-tag-sections',editTags,'toggleEditTag');
-  document.getElementById('edit-modal').style.display='flex';
-}
-function toggleEditTag(cat,val){if(!editTags[cat])editTags[cat]=[];const i=editTags[cat].indexOf(val);if(i===-1)editTags[cat].push(val);else editTags[cat].splice(i,1);renderTagSections('edit-tag-sections',editTags,'toggleEditTag');}
-function saveEdit(){
-  const v=videos.find(x=>x.id===editVideoId);if(!v)return;
-  const t=document.getElementById('edit-title').value.trim();
-  if(t)v.title=t;
-  v.notes=document.getElementById('edit-notes').value.trim();
-  cats.forEach(c=>{v[c.id]=[...(editTags[c.id]||[])];});
-  saveVideos();closeModal();renderLibrary();
-}
-function closeModal(){document.getElementById('edit-modal').style.display='none';editVideoId=null;}
-function closeModalOnOverlay(e){if(e.target===document.getElementById('edit-modal'))closeModal();}
+window.openEdit = function(id) {
+  const v = videos.find(x => x.id === id); if (!v) return;
+  editVideoId = id;
+  document.getElementById('edit-title').value = v.title;
+  document.getElementById('edit-notes').value = v.notes || '';
+  editTags = {}; cats.forEach(c => { editTags[c.id] = [...(v[c.id] || [])]; });
+  renderTagSections('edit-tag-sections', editTags, 'toggleEditTag');
+  document.getElementById('edit-modal').style.display = 'flex';
+};
+window.toggleEditTag = function(cat, val) { if (!editTags[cat]) editTags[cat] = []; const i = editTags[cat].indexOf(val); if (i === -1) editTags[cat].push(val); else editTags[cat].splice(i, 1); renderTagSections('edit-tag-sections', editTags, 'toggleEditTag'); };
+window.saveEdit = async function() {
+  const v = videos.find(x => x.id === editVideoId); if (!v) return;
+  const t = document.getElementById('edit-title').value.trim();
+  const updated = { ...v };
+  if (t) updated.title = t;
+  updated.notes = document.getElementById('edit-notes').value.trim();
+  cats.forEach(c => { updated[c.id] = [...(editTags[c.id] || [])]; });
+  await updateVideo(editVideoId, updated);
+  closeModal();
+};
+window.closeModal = function() { document.getElementById('edit-modal').style.display = 'none'; editVideoId = null; };
+window.closeModalOnOverlay = function(e) { if (e.target === document.getElementById('edit-modal')) closeModal(); };
 
-function renderManage(){
-  document.getElementById('new-tag-cat').innerHTML=cats.map(c=>`<option value="${escA(c.id)}">${esc(c.label)}</option>`).join('');
-  document.getElementById('manage-cats').innerHTML=cats.map(cat=>{
-    const isDefault=DEFAULT_CATS.some(d=>d.id===cat.id);
-    const tagsHTML=(tags[cat.id]||[]).map(val=>`<span class="manageable-tag">${esc(val)}<button class="remove-tag-btn" onclick="removeTag('${escA(cat.id)}','${escA(val)}')">×</button></span>`).join('');
-    return`<div class="manage-cat">
+window.renderManage = function() {
+  const el = document.getElementById('new-tag-cat'); if (!el) return;
+  el.innerHTML = cats.map(c => `<option value="${escA(c.id)}">${esc(c.label)}</option>`).join('');
+  document.getElementById('manage-cats').innerHTML = cats.map(cat => {
+    const isDefault = DEFAULT_CATS.some(d => d.id === cat.id);
+    const tagsHTML = (tags[cat.id] || []).map(val => `<span class="manageable-tag">${esc(val)}<button class="remove-tag-btn" onclick="removeTag('${escA(cat.id)}','${escA(val)}')">×</button></span>`).join('');
+    return `<div class="manage-cat">
       <div class="manage-cat-header">
         <div class="manage-cat-title"><span class="cat-dot" style="background:${cat.color}"></span>${esc(cat.label)}</div>
-        ${!isDefault?`<button class="btn-danger" onclick="removeCategory('${escA(cat.id)}')">Supprimer</button>`:''}
+        ${!isDefault ? `<button class="btn-danger" onclick="removeCategory('${escA(cat.id)}')">Supprimer</button>` : ''}
       </div>
-      <div>${tagsHTML||'<span style="color:var(--muted);font-size:12px">Aucun tag</span>'}</div>
+      <div>${tagsHTML || '<span style="color:var(--muted);font-size:12px">Aucun tag</span>'}</div>
     </div>`;
   }).join('');
-}
+};
 
-function addCategory(){
-  const input=document.getElementById('new-cat-name'),name=input.value.trim();
-  if(!name)return;
-  const id='cat_'+Date.now(),color=nextColor();
-  cats.push({id,label:name,color});tags[id]=[];filters[id]=[];formTags[id]=[];
-  saveCats();saveTags();input.value='';renderManage();
-}
-function removeCategory(id){
-  if(!confirm('Supprimer cette catégorie et tous ses tags ?'))return;
-  cats=cats.filter(c=>c.id!==id);delete tags[id];delete filters[id];delete formTags[id];
-  videos.forEach(v=>delete v[id]);
-  saveCats();saveTags();saveVideos();renderManage();
-}
-function addTag(){
-  const cat=document.getElementById('new-tag-cat').value,val=document.getElementById('new-tag-val').value.trim();
-  if(!val)return;if(!tags[cat])tags[cat]=[];
-  if(!tags[cat].includes(val)){tags[cat].push(val);saveTags();}
-  document.getElementById('new-tag-val').value='';renderManage();renderAddTagSections();
-}
-function removeTag(cat,val){
-  tags[cat]=(tags[cat]||[]).filter(x=>x!==val);saveTags();renderManage();renderLibrary();renderAddTagSections();
-}
+window.addCategory = async function() {
+  const input = document.getElementById('new-cat-name'), name = input.value.trim();
+  if (!name) return;
+  const id = 'cat_' + Date.now(), color = nextColor();
+  cats.push({ id, label: name, color }); tags[id] = []; filters[id] = []; formTags[id] = [];
+  await saveCats(); await saveTags(); input.value = ''; renderManage(); renderAddTagSections();
+};
+window.removeCategory = async function(id) {
+  if (!confirm('Supprimer cette catégorie et tous ses tags ?')) return;
+  cats = cats.filter(c => c.id !== id); delete tags[id]; delete filters[id]; delete formTags[id];
+  // Update all videos to remove this category
+  for (const v of videos) {
+    if (v[id] !== undefined) {
+      const updated = { ...v }; delete updated[id];
+      await updateVideo(v.id, updated);
+    }
+  }
+  await saveCats(); await saveTags(); renderManage();
+};
+window.addTag = async function() {
+  const cat = document.getElementById('new-tag-cat').value, val = document.getElementById('new-tag-val').value.trim();
+  if (!val) return; if (!tags[cat]) tags[cat] = [];
+  if (!tags[cat].includes(val)) { tags[cat].push(val); await saveTags(); }
+  document.getElementById('new-tag-val').value = ''; renderManage(); renderAddTagSections();
+};
+window.removeTag = async function(cat, val) {
+  tags[cat] = (tags[cat] || []).filter(x => x !== val); await saveTags(); renderManage(); renderAddTagSections();
+};
 
-loadData();renderLibrary();
 </script>
 </body>
 </html>
